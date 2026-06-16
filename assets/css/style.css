@@ -1,0 +1,321 @@
+/* ============================================================
+   STYLE.CSS
+   Tema: RRI Purwokerto - Sistem Inventori
+   Palet: Navy (#0B3D6E) + Merah RRI (#C8102E) + Abu netral
+   ============================================================ */
+
+:root {
+  --rri-navy: #0b3d6e;
+  --rri-navy-dark: #082b4d;
+  --rri-red: #c8102e;
+  --rri-red-dark: #a30d25;
+  --rri-bg: #f4f6f9;
+  --rri-card-radius: 0.75rem;
+  --rri-sidebar-width: 260px;
+}
+
+body {
+  background-color: var(--rri-bg);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: #1f2933;
+}
+
+/* ===== Login Page ===== */
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--rri-navy) 0%, var(--rri-navy-dark) 60%, var(--rri-red-dark) 130%);
+  padding: 1rem;
+}
+
+.login-card {
+  background: #fff;
+  border-radius: var(--rri-card-radius);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  max-width: 900px;
+  width: 100%;
+}
+
+.login-brand {
+  background: var(--rri-navy);
+  color: #fff;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.login-brand::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 6px;
+  background: var(--rri-red);
+}
+
+.login-brand h1 {
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+
+.login-brand .badge-strip {
+  width: 56px;
+  height: 6px;
+  background: var(--rri-red);
+  margin: 0.75rem 0 1rem;
+  border-radius: 3px;
+}
+
+.login-form-area {
+  padding: 3rem 2rem;
+}
+
+/* ===== Layout: Sidebar + Topbar ===== */
+.app-sidebar {
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: var(--rri-sidebar-width);
+  background: var(--rri-navy);
+  color: #fff;
+  z-index: 1040;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease;
+}
+
+.app-sidebar .sidebar-header {
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-sidebar .sidebar-header .title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
+
+.app-sidebar .sidebar-header .subtitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.app-sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.75);
+  padding: 0.65rem 1.25rem;
+  font-size: 0.92rem;
+  border-left: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.app-sidebar .nav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.app-sidebar .nav-link.active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-left-color: var(--rri-red);
+  font-weight: 600;
+}
+
+.app-sidebar .nav-section-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 1rem 1.25rem 0.25rem;
+}
+
+.app-main {
+  margin-left: var(--rri-sidebar-width);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-topbar {
+  background: #fff;
+  border-bottom: 1px solid #e3e7ed;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+}
+
+.app-content {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.sidebar-toggle-btn {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .app-sidebar {
+    transform: translateX(-100%);
+  }
+  .app-sidebar.show {
+    transform: translateX(0);
+  }
+  .app-main {
+    margin-left: 0;
+  }
+  .sidebar-toggle-btn {
+    display: inline-flex;
+  }
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 1035;
+    display: none;
+  }
+  .sidebar-backdrop.show {
+    display: block;
+  }
+}
+
+/* ===== Cards ===== */
+.stat-card {
+  border: none;
+  border-radius: var(--rri-card-radius);
+  box-shadow: 0 0.25rem 0.75rem rgba(20, 40, 80, 0.06);
+  height: 100%;
+}
+
+.stat-card .stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+
+.stat-card .stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.stat-card .stat-label {
+  font-size: 0.82rem;
+  color: #6b7280;
+}
+
+.bg-soft-navy { background: rgba(11, 61, 110, 0.1); color: var(--rri-navy); }
+.bg-soft-red { background: rgba(200, 16, 46, 0.1); color: var(--rri-red); }
+.bg-soft-green { background: rgba(25, 135, 84, 0.1); color: #198754; }
+.bg-soft-orange { background: rgba(253, 126, 20, 0.1); color: #fd7e14; }
+.bg-soft-purple { background: rgba(111, 66, 193, 0.1); color: #6f42c1; }
+.bg-soft-teal { background: rgba(13, 202, 240, 0.1); color: #0dcaf0; }
+
+.content-card {
+  background: #fff;
+  border-radius: var(--rri-card-radius);
+  box-shadow: 0 0.25rem 0.75rem rgba(20, 40, 80, 0.06);
+  border: none;
+}
+
+/* ===== Buttons / Brand ===== */
+.btn-rri-primary {
+  background: var(--rri-navy);
+  border-color: var(--rri-navy);
+  color: #fff;
+}
+.btn-rri-primary:hover {
+  background: var(--rri-navy-dark);
+  border-color: var(--rri-navy-dark);
+  color: #fff;
+}
+.btn-rri-accent {
+  background: var(--rri-red);
+  border-color: var(--rri-red);
+  color: #fff;
+}
+.btn-rri-accent:hover {
+  background: var(--rri-red-dark);
+  border-color: var(--rri-red-dark);
+  color: #fff;
+}
+
+/* ===== Badges status ===== */
+.badge-status {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35em 0.65em;
+}
+
+/* ===== Tables ===== */
+.table-rri thead th {
+  background: var(--rri-navy);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.table-rri td, .table-rri th {
+  vertical-align: middle;
+}
+.table-rri tbody tr:hover {
+  background: rgba(11, 61, 110, 0.04);
+}
+
+/* ===== Misc ===== */
+.thumb-img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 0.4rem;
+  background: #e9ecef;
+}
+
+.qr-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border: 1px solid #e3e7ed;
+  border-radius: 0.4rem;
+  background: #fff;
+}
+
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: #9aa5b1;
+}
+
+.empty-state i {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+#cameraPreview, #qrScanPreview {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 0.5rem;
+  background: #000;
+}
