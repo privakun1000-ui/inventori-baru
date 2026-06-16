@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mutasi Barang - Sistem Inventori RRI Purwokerto</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div id="sidebarContainer"></div>
+
+  <div class="app-main">
+    <div id="topbarContainer"></div>
+
+    <div class="app-content">
+      <div class="card content-card p-3 mb-3 text-end">
+        <div>
+          <button class="btn btn-rri-primary" id="btnTambahMutasi"><i class="bi bi-plus-lg"></i> Catat Mutasi Barang</button>
+        </div>
+      </div>
+
+      <div class="card content-card p-3">
+        <h6 class="fw-bold mb-2">Riwayat Mutasi / Perpindahan Barang Antar Ruangan</h6>
+        <div class="table-responsive">
+          <table class="table table-rri table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Barang</th>
+                <th>Perpindahan</th>
+                <th>Petugas</th>
+                <th>Keterangan</th>
+              </tr>
+            </thead>
+            <tbody id="mutasiTableBody">
+              <tr><td colspan="5" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Mutasi -->
+  <div class="modal fade" id="mutasiModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="formMutasi">
+          <div class="modal-header">
+            <h5 class="modal-title">Catat Mutasi Barang</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Barang <span class="text-danger">*</span></label>
+              <select class="form-select" id="barangMutasi" required>
+                <option value="">-- Pilih Barang --</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Ruangan Asal</label>
+              <input type="text" class="form-control" id="ruanganAsalMutasi" readonly>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Ruangan Tujuan <span class="text-danger">*</span></label>
+              <select class="form-select" id="ruanganTujuanMutasi" required>
+                <option value="">-- Pilih Ruangan Tujuan --</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Keterangan</label>
+              <textarea class="form-control" id="keteranganMutasi" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-rri-primary">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/mutasi.js"></script>
+</body>
+</html>

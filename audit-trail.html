@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Trail - Sistem Inventori RRI Purwokerto</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div id="sidebarContainer"></div>
+
+  <div class="app-main">
+    <div id="topbarContainer"></div>
+
+    <div class="app-content">
+      <div class="card content-card p-3 mb-3">
+        <div class="row g-2 align-items-end">
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1">Modul</label>
+            <select class="form-select" id="filterModul">
+              <option value="">Semua Modul</option>
+              <option value="Auth">Auth</option>
+              <option value="Barang">Barang</option>
+              <option value="Ruangan">Ruangan</option>
+              <option value="Pengguna">Pengguna</option>
+              <option value="Peminjaman">Peminjaman</option>
+              <option value="PemakaianRuangan">Pemakaian Ruangan</option>
+              <option value="Pengembalian">Pengembalian</option>
+              <option value="Mutasi">Mutasi</option>
+              <option value="BAST">BAST</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1">Dari Tanggal</label>
+            <input type="date" class="form-control" id="filterStartDate">
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1">Sampai Tanggal</label>
+            <input type="date" class="form-control" id="filterEndDate">
+          </div>
+          <div class="col-6 col-md-3 text-end">
+            <button class="btn btn-rri-primary" id="btnFilter"><i class="bi bi-funnel"></i> Filter</button>
+            <button class="btn btn-outline-secondary" id="btnReset"><i class="bi bi-x-lg"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card content-card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold mb-0">Log Aktivitas Sistem</h6>
+          <div>
+            <button class="btn btn-sm btn-outline-success" id="btnExportExcel"><i class="bi bi-file-earmark-excel"></i> Excel</button>
+            <button class="btn btn-sm btn-outline-danger" id="btnExportPdf"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-rri table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Waktu</th>
+                <th>User</th>
+                <th>Aktivitas</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="auditTableBody">
+              <tr><td colspan="4" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/audit.js"></script>
+</body>
+</html>

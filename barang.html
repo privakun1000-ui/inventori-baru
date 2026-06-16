@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Barang - Sistem Inventori RRI Purwokerto</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div id="sidebarContainer"></div>
+
+  <div class="app-main">
+    <div id="topbarContainer"></div>
+
+    <div class="app-content">
+      <div class="card content-card p-3 mb-3">
+        <div class="row g-2 align-items-end">
+          <div class="col-12 col-md-3">
+            <label class="form-label small mb-1">Cari Barang</label>
+            <input type="text" class="form-control" id="searchInput" placeholder="Nama, kode, no. inventaris...">
+          </div>
+          <div class="col-6 col-md-2">
+            <label class="form-label small mb-1">Kategori</label>
+            <select class="form-select select-kategori" id="filterKategori">
+              <option value="">Semua Kategori</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <label class="form-label small mb-1">Unit Kerja</label>
+            <select class="form-select select-unit-kerja" id="filterUnitKerja">
+              <option value="">Semua Unit Kerja</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <label class="form-label small mb-1">Status</label>
+            <select class="form-select select-status-barang" id="filterStatus">
+              <option value="">Semua Status</option>
+            </select>
+          </div>
+          <div class="col-6 col-md-2">
+            <label class="form-label small mb-1">Kondisi</label>
+            <select class="form-select select-kondisi" id="filterKondisi">
+              <option value="">Semua Kondisi</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-1 text-end">
+            <button class="btn btn-rri-primary w-100" id="btnTambahBarang" title="Tambah Barang">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card content-card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="fw-bold mb-0">Daftar Barang</h6>
+          <div>
+            <button class="btn btn-sm btn-outline-success" id="btnExportExcel"><i class="bi bi-file-earmark-excel"></i> Excel</button>
+            <button class="btn btn-sm btn-outline-danger" id="btnExportPdf"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-rri table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Foto</th>
+                <th>Kode / No. Inventaris</th>
+                <th>Nama Barang</th>
+                <th>Kategori</th>
+                <th>Unit Kerja</th>
+                <th>Ruangan</th>
+                <th>Kondisi</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="barangTableBody">
+              <tr><td colspan="9" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah/Edit Barang -->
+  <div class="modal fade" id="barangModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="formBarang">
+          <div class="modal-header">
+            <h5 class="modal-title" id="barangModalTitle">Tambah Barang</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="barangId">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="namaBarang" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Kategori <span class="text-danger">*</span></label>
+                <select class="form-select select-kategori" id="kategori" required>
+                  <option value="">-- Pilih Kategori --</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Merk</label>
+                <input type="text" class="form-control" id="merk">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Nomor Inventaris</label>
+                <input type="text" class="form-control" id="nomorInventaris">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Spesifikasi</label>
+                <textarea class="form-control" id="spesifikasi" rows="2"></textarea>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Unit Kerja <span class="text-danger">*</span></label>
+                <select class="form-select select-unit-kerja" id="unitKerja" required>
+                  <option value="">-- Pilih Unit Kerja --</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Ruangan <span class="text-danger">*</span></label>
+                <select class="form-select select-ruangan" id="ruangan" required>
+                  <option value="">-- Pilih Ruangan --</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Kondisi</label>
+                <select class="form-select select-kondisi" id="kondisi"></select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Status</label>
+                <select class="form-select select-status-barang" id="status"></select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Keterangan</label>
+                <textarea class="form-control" id="keterangan" rows="2"></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Foto Barang</label>
+                <input type="file" class="form-control" id="fotoBarang" accept="image/*">
+                <img id="previewFoto" class="qr-preview mt-2 d-none">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-rri-primary">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal QR & Barcode -->
+  <div class="modal fade" id="qrModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="qrModalTitle">QR & Barcode</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p class="fw-bold mb-2" id="qrModalKode"></p>
+          <p class="small text-muted mb-1">QR Code</p>
+          <img id="qrModalImage" class="qr-preview mb-3" style="width:150px;height:150px;">
+          <p class="small text-muted mb-1">Barcode</p>
+          <img id="barcodeModalImage" class="qr-preview" style="width:100%;height:60px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/barang.js"></script>
+</body>
+</html>

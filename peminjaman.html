@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peminjaman Barang - Sistem Inventori RRI Purwokerto</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div id="sidebarContainer"></div>
+
+  <div class="app-main">
+    <div id="topbarContainer"></div>
+
+    <div class="app-content">
+      <div class="card content-card p-3 mb-3">
+        <div class="row g-2 align-items-end">
+          <div class="col-12 col-md-5">
+            <label class="form-label small mb-1">Cari</label>
+            <input type="text" class="form-control" id="searchInput" placeholder="Peminjam, barang, no. transaksi...">
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1">Status</label>
+            <select class="form-select" id="filterStatus">
+              <option value="">Semua Status</option>
+              <option value="Pending">Pending</option>
+              <option value="Dipinjam">Dipinjam</option>
+              <option value="Disetujui">Disetujui</option>
+              <option value="Ditolak">Ditolak</option>
+              <option value="Dikembalikan">Dikembalikan</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-4 text-end">
+            <button class="btn btn-rri-primary" id="btnAjukanPinjam"><i class="bi bi-plus-lg"></i> Ajukan Peminjaman</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card content-card p-3">
+        <h6 class="fw-bold mb-2">Daftar Peminjaman</h6>
+        <div class="table-responsive">
+          <table class="table table-rri table-hover align-middle">
+            <thead>
+              <tr>
+                <th>No. Transaksi</th>
+                <th>Peminjam</th>
+                <th>Barang</th>
+                <th>Tanggal/Jam</th>
+                <th>Keperluan</th>
+                <th>Status</th>
+                <th>QR</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="peminjamanTableBody">
+              <tr><td colspan="8" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ajukan Peminjaman -->
+  <div class="modal fade" id="peminjamanModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="formPeminjaman">
+          <div class="modal-header">
+            <h5 class="modal-title">Ajukan Peminjaman Barang</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nama Peminjam <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="peminjamNama" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Unit Kerja <span class="text-danger">*</span></label>
+                <select class="form-select" id="unitKerjaPinjam" required>
+                  <option value="">-- Pilih Unit Kerja --</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Barang <span class="text-danger">*</span></label>
+                <select class="form-select" id="barangPinjam" required>
+                  <option value="">-- Pilih Barang --</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Tanggal Pinjam <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="tanggalPinjam" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Jam Mulai <span class="text-danger">*</span></label>
+                <input type="time" class="form-control" id="jamMulaiPinjam" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Jam Selesai <span class="text-danger">*</span></label>
+                <input type="time" class="form-control" id="jamSelesaiPinjam" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Keperluan</label>
+                <textarea class="form-control" id="keperluanPinjam" rows="2"></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Foto Sebelum Dipinjam</label>
+                <input type="file" class="form-control" id="fotoSebelumPinjam" accept="image/*">
+                <img id="previewFotoPinjam" class="qr-preview mt-2 d-none">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-rri-primary">Ajukan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Approval -->
+  <div class="modal fade" id="approvalModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="formApproval">
+          <div class="modal-header">
+            <h6 class="modal-title">Proses Approval Peminjaman</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="approvalPeminjamanId">
+            <p id="approvalDetailText" class="mb-3"></p>
+            <label class="form-label">Catatan (opsional)</label>
+            <textarea class="form-control" id="catatanApproval" rows="2"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-danger" data-action="reject">Tolak</button>
+            <button type="submit" class="btn btn-success" data-action="approve">Setujui</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detail -->
+  <div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title">Detail Peminjaman</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="detailModalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal QR -->
+  <div class="modal fade" id="qrModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="qrModalTitle">QR Transaksi</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p class="small text-muted mb-1">QR Code</p>
+          <img id="qrModalImage" class="qr-preview mb-3" style="width:150px;height:150px;">
+          <p class="small text-muted mb-1">Barcode</p>
+          <img id="barcodeModalImage" class="qr-preview" style="width:100%;height:60px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/peminjaman.js"></script>
+</body>
+</html>

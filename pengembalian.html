@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengembalian Barang - Sistem Inventori RRI Purwokerto</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div id="sidebarContainer"></div>
+
+  <div class="app-main">
+    <div id="topbarContainer"></div>
+
+    <div class="app-content">
+      <div class="card content-card p-3 mb-3">
+        <div class="row g-2 align-items-end">
+          <div class="col-12 col-md-4">
+            <label class="form-label small mb-1">Status Verifikasi</label>
+            <select class="form-select" id="filterStatus">
+              <option value="">Semua Status</option>
+              <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+              <option value="Terverifikasi">Terverifikasi</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-8 text-end">
+            <button class="btn btn-rri-primary" id="btnScanQR"><i class="bi bi-qr-code-scan"></i> Scan QR Pengembalian</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card content-card p-3">
+        <h6 class="fw-bold mb-2">Daftar Pengembalian</h6>
+        <div class="table-responsive">
+          <table class="table table-rri table-hover align-middle">
+            <thead>
+              <tr>
+                <th>No. Transaksi</th>
+                <th>Tanggal Kembali</th>
+                <th>Foto</th>
+                <th>Kondisi</th>
+                <th>Catatan Kerusakan</th>
+                <th>Status Verifikasi</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="pengembalianTableBody">
+              <tr><td colspan="7" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Scan QR -->
+  <div class="modal fade" id="scanModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title">Scan QR Transaksi Peminjaman</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" id="qrModal2Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <div id="cameraError" class="alert alert-warning d-none">Kamera tidak dapat diakses. Gunakan input manual di bawah.</div>
+          <div id="scanNotSupported" class="alert alert-info d-none">Browser ini tidak mendukung pemindaian QR otomatis. Gunakan input manual (salin isi QR) di bawah.</div>
+          <video id="qrScanPreview" autoplay muted playsinline class="mb-3"></video>
+          <div class="input-group">
+            <input type="text" class="form-control" id="manualQrInput" placeholder="Atau tempel isi QR Code di sini">
+            <button class="btn btn-rri-primary" id="btnManualScan" type="button">Proses</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Form Pengembalian -->
+  <div class="modal fade" id="pengembalianModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="formPengembalian">
+          <div class="modal-header">
+            <h5 class="modal-title">Proses Pengembalian Barang</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-info" id="infoPeminjamanText"></div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Kondisi Barang Saat Dikembalikan</label>
+                <select class="form-select" id="kondisiPengembalian">
+                  <option value="Baik">Baik</option>
+                  <option value="Rusak Ringan">Rusak Ringan</option>
+                  <option value="Rusak Berat">Rusak Berat</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Catatan Kerusakan (jika ada)</label>
+                <textarea class="form-control" id="catatanKerusakan" rows="2"></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Foto Kondisi Setelah Digunakan</label>
+                <input type="file" class="form-control" id="fotoPengembalian" accept="image/*">
+                <img id="previewFotoPengembalian" class="qr-preview mt-2 d-none">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-rri-primary">Simpan Pengembalian</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Verifikasi -->
+  <div class="modal fade" id="verifikasiModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="formVerifikasi">
+          <div class="modal-header">
+            <h6 class="modal-title">Verifikasi Pengembalian</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="verifikasiId">
+            <div class="mb-3" id="verifikasiDetail"></div>
+            <label class="form-label">Kondisi Akhir Barang</label>
+            <select class="form-select" id="kondisiAkhirVerifikasi">
+              <option value="Baik">Baik</option>
+              <option value="Rusak Ringan">Rusak Ringan</option>
+              <option value="Rusak Berat">Rusak Berat</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-rri-primary">Verifikasi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/pengembalian.js"></script>
+</body>
+</html>

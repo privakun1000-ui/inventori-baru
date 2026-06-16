@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Ruangan - Sistem Inventori RRI Purwokerto</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div id="sidebarContainer"></div>
+
+  <div class="app-main">
+    <div id="topbarContainer"></div>
+
+    <div class="app-content">
+      <div class="card content-card p-3 mb-3">
+        <div class="row g-2 align-items-end">
+          <div class="col-12 col-md-5">
+            <label class="form-label small mb-1">Cari Ruangan</label>
+            <input type="text" class="form-control" id="searchInput" placeholder="Nama atau kode ruangan...">
+          </div>
+          <div class="col-6 col-md-3">
+            <label class="form-label small mb-1">Status</label>
+            <select class="form-select" id="filterStatus">
+              <option value="">Semua Status</option>
+              <option value="Tersedia">Tersedia</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Nonaktif">Nonaktif</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-4 text-end">
+            <button class="btn btn-rri-primary" id="btnTambahRuangan"><i class="bi bi-plus-lg"></i> Tambah Ruangan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card content-card p-3">
+        <h6 class="fw-bold mb-2">Daftar Ruangan</h6>
+        <div class="table-responsive">
+          <table class="table table-rri table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Foto</th>
+                <th>Kode</th>
+                <th>Nama Ruangan</th>
+                <th>Lokasi</th>
+                <th>Kapasitas</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="ruanganTableBody">
+              <tr><td colspan="7" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah/Edit Ruangan -->
+  <div class="modal fade" id="ruanganModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="formRuangan">
+          <div class="modal-header">
+            <h5 class="modal-title" id="ruanganModalTitle">Tambah Ruangan</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="ruanganId">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nama Ruangan <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="namaRuangan" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Lokasi</label>
+                <input type="text" class="form-control" id="lokasi">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Kapasitas</label>
+                <input type="number" class="form-control" id="kapasitas" min="0">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="statusRuangan">
+                  <option value="Tersedia">Tersedia</option>
+                  <option value="Maintenance">Maintenance</option>
+                  <option value="Nonaktif">Nonaktif</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Fasilitas</label>
+                <textarea class="form-control" id="fasilitas" rows="2" placeholder="Contoh: AC, Proyektor, Sound System, dll."></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Foto Ruangan</label>
+                <input type="file" class="form-control" id="fotoRuangan" accept="image/*">
+                <img id="previewFotoRuangan" class="qr-preview mt-2 d-none">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-rri-primary">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal QR -->
+  <div class="modal fade" id="qrModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="qrModalTitle">QR Ruangan</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <p class="fw-bold mb-2" id="qrModalKode"></p>
+          <img id="qrModalImage" class="qr-preview" style="width:180px;height:180px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Jadwal -->
+  <div class="modal fade" id="jadwalModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="jadwalModalTitle">Jadwal Penggunaan</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="jadwalModalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/ruangan.js"></script>
+</body>
+</html>

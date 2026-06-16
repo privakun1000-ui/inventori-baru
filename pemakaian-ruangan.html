@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pemakaian Ruangan - Sistem Inventori RRI Purwokerto</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div id="sidebarContainer"></div>
+
+  <div class="app-main">
+    <div id="topbarContainer"></div>
+
+    <div class="app-content">
+      <div class="card content-card p-3 mb-3">
+        <div class="row g-2 align-items-end">
+          <div class="col-12 col-md-4">
+            <label class="form-label small mb-1">Status</label>
+            <select class="form-select" id="filterStatus">
+              <option value="">Semua Status</option>
+              <option value="Pending">Pending</option>
+              <option value="Disetujui">Disetujui</option>
+              <option value="Ditolak">Ditolak</option>
+              <option value="Selesai">Selesai</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-8 text-end">
+            <button class="btn btn-rri-primary" id="btnAjukanPemakaian"><i class="bi bi-plus-lg"></i> Ajukan Pemakaian Ruangan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card content-card p-3">
+        <h6 class="fw-bold mb-2">Daftar Pemakaian Ruangan</h6>
+        <div class="table-responsive">
+          <table class="table table-rri table-hover align-middle">
+            <thead>
+              <tr>
+                <th>No. Transaksi</th>
+                <th>Ruangan</th>
+                <th>Tanggal/Jam</th>
+                <th>Kegiatan</th>
+                <th>Unit Kerja / PIC</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="pemakaianTableBody">
+              <tr><td colspan="7" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ajukan Pemakaian -->
+  <div class="modal fade" id="pemakaianModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="formPemakaian">
+          <div class="modal-header">
+            <h5 class="modal-title">Ajukan Pemakaian Ruangan</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div id="bentrokWarning" class="alert alert-danger d-none"></div>
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Ruangan <span class="text-danger">*</span></label>
+                <select class="form-select" id="ruanganPemakaian" required>
+                  <option value="">-- Pilih Ruangan --</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Tanggal <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="tanggalPemakaian" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Jam Mulai <span class="text-danger">*</span></label>
+                <input type="time" class="form-control" id="jamMulaiPemakaian" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Jam Selesai <span class="text-danger">*</span></label>
+                <input type="time" class="form-control" id="jamSelesaiPemakaian" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Unit Kerja <span class="text-danger">*</span></label>
+                <select class="form-select" id="unitKerjaPemakaian" required>
+                  <option value="">-- Pilih Unit Kerja --</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">PIC / Penanggung Jawab</label>
+                <input type="text" class="form-control" id="picPemakaian">
+              </div>
+              <div class="col-12">
+                <label class="form-label">Kegiatan <span class="text-danger">*</span></label>
+                <textarea class="form-control" id="kegiatanPemakaian" rows="2" required></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-rri-primary">Ajukan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Approval -->
+  <div class="modal fade" id="approvalModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="formApproval">
+          <div class="modal-header">
+            <h6 class="modal-title">Proses Approval Pemakaian Ruangan</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="approvalPemakaianId">
+            <p id="approvalDetailText" class="mb-3"></p>
+            <label class="form-label">Catatan (opsional)</label>
+            <textarea class="form-control" id="catatanApproval" rows="2"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-danger" data-action="reject">Tolak</button>
+            <button type="submit" class="btn btn-success" data-action="approve">Setujui</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/pemakaian-ruangan.js"></script>
+</body>
+</html>

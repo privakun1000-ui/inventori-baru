@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Sistem Inventori RRI Purwokerto</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-card">
+      <div class="row g-0">
+        <div class="col-lg-5">
+          <div class="login-brand h-100">
+            <div class="badge-strip"></div>
+            <h1>Sistem Inventori<br>Barang &amp; Ruangan</h1>
+            <p class="mb-1 fw-semibold">RRI Purwokerto</p>
+            <p class="small text-white-50 mb-0">
+              Kelola aset, ruangan, peminjaman, dan pengembalian
+              secara terpusat dan terpantau dalam satu dashboard.
+            </p>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <div class="login-form-area">
+            <h4 class="fw-bold mb-1">Masuk ke Akun Anda</h4>
+            <p class="text-muted mb-4 small">Gunakan username dan password yang telah diberikan administrator.</p>
+
+            <div id="loginError" class="alert alert-danger d-none" role="alert"></div>
+
+            <form id="loginForm">
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-person"></i></span>
+                  <input type="text" class="form-control" id="username" placeholder="Masukkan username" required autofocus>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                  <input type="password" class="form-control" id="password" placeholder="Masukkan password" required>
+                  <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-rri-primary w-100 py-2" id="btnLogin">Masuk</button>
+            </form>
+
+            <p class="text-center text-muted small mt-4 mb-0">
+              &copy; 2026 RRI Purwokerto &mdash; Sistem Inventori Aset
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth.js"></script>
+</body>
+</html>

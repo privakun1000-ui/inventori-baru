@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Sistem Inventori RRI Purwokerto</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div id="sidebarContainer"></div>
+
+  <div class="app-main">
+    <div id="topbarContainer"></div>
+
+    <div class="app-content">
+      <!-- Notifikasi Approval Pending -->
+      <div class="mb-3">
+        <span id="approvalPendingBadge" class="badge bg-warning text-dark p-2 d-none">
+          <i class="bi bi-bell-fill"></i> <span></span>
+        </span>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="row g-3 mb-3">
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="card stat-card p-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="stat-icon bg-soft-navy"><i class="bi bi-box-seam"></i></div>
+              <div>
+                <div class="stat-value" id="statTotalBarang">0</div>
+                <div class="stat-label">Total Barang</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="card stat-card p-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="stat-icon bg-soft-purple"><i class="bi bi-door-open"></i></div>
+              <div>
+                <div class="stat-value" id="statTotalRuangan">0</div>
+                <div class="stat-label">Total Ruangan</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="card stat-card p-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="stat-icon bg-soft-teal"><i class="bi bi-box-arrow-right"></i></div>
+              <div>
+                <div class="stat-value" id="statPeminjamanAktif">0</div>
+                <div class="stat-label">Peminjaman Aktif</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="card stat-card p-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="stat-icon bg-soft-green"><i class="bi bi-box-arrow-in-left"></i></div>
+              <div>
+                <div class="stat-value" id="statPengembalianHariIni">0</div>
+                <div class="stat-label">Pengembalian Hari Ini</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="card stat-card p-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="stat-icon bg-soft-red"><i class="bi bi-exclamation-triangle"></i></div>
+              <div>
+                <div class="stat-value" id="statBarangRusak">0</div>
+                <div class="stat-label">Barang Rusak</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="card stat-card p-3">
+            <div class="d-flex align-items-center gap-3">
+              <div class="stat-icon bg-soft-orange"><i class="bi bi-arrow-left-right"></i></div>
+              <div>
+                <div class="stat-value" id="statBarangDipinjam">0</div>
+                <div class="stat-label">Barang Dipinjam</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="row g-3 mb-3">
+        <div class="col-lg-8">
+          <div class="card content-card p-3 h-100">
+            <h6 class="fw-bold mb-3">Grafik Aktivitas Peminjaman (7 Hari Terakhir)</h6>
+            <div style="height:280px;">
+              <canvas id="chartPeminjaman"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card content-card p-3 h-100">
+            <h6 class="fw-bold mb-3">Grafik Kondisi Barang</h6>
+            <div style="height:280px;">
+              <canvas id="chartKondisi"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jadwal & Approval -->
+      <div class="row g-3">
+        <div class="col-lg-6">
+          <div class="card content-card p-3 h-100">
+            <h6 class="fw-bold mb-3"><i class="bi bi-calendar-event"></i> Jadwal Penggunaan Ruangan Hari Ini</h6>
+            <div class="list-group list-group-flush" id="jadwalHariIniList"></div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card content-card p-3 h-100">
+            <h6 class="fw-bold mb-3"><i class="bi bi-bell"></i> Notifikasi Approval Pending</h6>
+            <div class="list-group list-group-flush" id="approvalPendingList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

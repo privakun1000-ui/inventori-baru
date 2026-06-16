@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Pengguna - Sistem Inventori RRI Purwokerto</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+  <div id="sidebarContainer"></div>
+
+  <div class="app-main">
+    <div id="topbarContainer"></div>
+
+    <div class="app-content">
+      <div class="card content-card p-3 mb-3">
+        <div class="row g-2 align-items-end">
+          <div class="col-12 col-md-8">
+            <label class="form-label small mb-1">Cari Pengguna</label>
+            <input type="text" class="form-control" id="searchInput" placeholder="Nama, username, atau unit kerja...">
+          </div>
+          <div class="col-12 col-md-4 text-end">
+            <button class="btn btn-rri-primary" id="btnTambahPengguna"><i class="bi bi-plus-lg"></i> Tambah Pengguna</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card content-card p-3">
+        <h6 class="fw-bold mb-2">Daftar Pengguna</h6>
+        <div class="table-responsive">
+          <table class="table table-rri table-hover align-middle">
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>No. WhatsApp</th>
+                <th>Unit Kerja</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="penggunaTableBody">
+              <tr><td colspan="7" class="text-center py-4"><div class="spinner-border text-primary"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tambah/Edit Pengguna -->
+  <div class="modal fade" id="penggunaModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="formPengguna">
+          <div class="modal-header">
+            <h5 class="modal-title" id="penggunaModalTitle">Tambah Pengguna</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="penggunaId">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="namaPengguna" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Username <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="usernamePengguna" required>
+              </div>
+              <div class="col-md-6" id="passwordPenggunaWrapper">
+                <label class="form-label">Password</label>
+                <input type="text" class="form-control" id="passwordPengguna" placeholder="Default: 12345678">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" id="emailPengguna">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Nomor WhatsApp</label>
+                <input type="text" class="form-control" id="whatsappPengguna" placeholder="08xxxxxxxxxx">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Unit Kerja <span class="text-danger">*</span></label>
+                <select class="form-select" id="unitKerjaPengguna" required>
+                  <option value="">-- Pilih Unit Kerja --</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Status</label>
+                <select class="form-select" id="statusPengguna">
+                  <option value="Aktif">Aktif</option>
+                  <option value="Nonaktif">Nonaktif</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-rri-primary">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Reset Password -->
+  <div class="modal fade" id="resetPasswordModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <form id="formResetPassword">
+          <div class="modal-header">
+            <h6 class="modal-title">Reset Password</h6>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="resetPasswordUserId">
+            <p class="mb-2">Pengguna: <strong id="resetPasswordUserName"></strong></p>
+            <label class="form-label">Password Baru <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="newPasswordReset" required placeholder="Minimal 6 karakter">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-rri-accent">Reset Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/pengguna.js"></script>
+</body>
+</html>
