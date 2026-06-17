@@ -178,6 +178,99 @@
     </div>
   </div>
 
+  <!-- Modal Pinjam Cepat -->
+  <div class="modal fade" id="pinjamCepatModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="formPinjamCepat">
+          <div class="modal-header">
+            <h5 class="modal-title">Pinjam Barang</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="pinjamCepatBarangId">
+            <div class="alert alert-info" id="pinjamCepatInfo"></div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Nama Peminjam</label>
+                <input type="text" class="form-control" id="pinjamCepatPeminjam" readonly>
+                <div class="form-text">Otomatis sesuai akun yang login.</div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Unit Kerja <span class="text-danger">*</span></label>
+                <select class="form-select select-unit-kerja" id="pinjamCepatUnitKerja" required>
+                  <option value="">-- Pilih Unit Kerja --</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Tanggal Pinjam <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" id="pinjamCepatTanggal" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Jam Mulai <span class="text-danger">*</span></label>
+                <input type="time" class="form-control" id="pinjamCepatJamMulai" required>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Jam Selesai <span class="text-danger">*</span></label>
+                <input type="time" class="form-control" id="pinjamCepatJamSelesai" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Keperluan</label>
+                <textarea class="form-control" id="pinjamCepatKeperluan" rows="2"></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Foto Sebelum Dipinjam</label>
+                <input type="file" class="form-control" id="fotoPinjamCepat" accept="image/*">
+                <img id="previewFotoPinjamCepat" class="qr-preview mt-2 d-none">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-rri-primary">Ajukan Peminjaman</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Kembalikan Cepat -->
+  <div class="modal fade" id="kembalikanCepatModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="formKembalikanCepat">
+          <div class="modal-header">
+            <h5 class="modal-title">Kembalikan Barang</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="kembalikanCepatPeminjamanId">
+            <div class="alert alert-info" id="kembalikanCepatInfo"></div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Kondisi Barang Saat Dikembalikan</label>
+                <select class="form-select select-kondisi" id="kembalikanCepatKondisi"></select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Catatan Kerusakan (jika ada)</label>
+                <textarea class="form-control" id="kembalikanCepatCatatan" rows="2"></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Foto Kondisi Setelah Digunakan</label>
+                <input type="file" class="form-control" id="fotoKembalikanCepat" accept="image/*">
+                <img id="previewFotoKembalikanCepat" class="qr-preview mt-2 d-none">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-rri-primary">Simpan Pengembalian</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
   <script src="assets/js/api.js"></script>
   <script src="assets/js/common.js"></script>

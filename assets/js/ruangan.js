@@ -10,12 +10,19 @@ let ruanganListCache = [];
 document.addEventListener('DOMContentLoaded', async () => {
   await renderLayout('ruangan.html');
   await loadRuangan();
+  applyRoleRestrictions();
 
   document.getElementById('searchInput').addEventListener('input', debounce(loadRuangan, 400));
   document.getElementById('filterStatus').addEventListener('change', loadRuangan);
   document.getElementById('formRuangan').addEventListener('submit', submitRuangan);
   document.getElementById('btnTambahRuangan').addEventListener('click', () => openRuanganModal(null));
 });
+
+function applyRoleRestrictions() {
+  if (!isAdmin()) {
+    document.getElementById('btnTambahRuangan').classList.add('d-none');
+  }
+}
 
 function debounce(fn, delay) {
   let timer;
@@ -63,8 +70,10 @@ function renderRuanganTable(data) {
       <td class="text-nowrap">
         <button class="btn btn-sm btn-outline-secondary" title="QR Ruangan" onclick="showQRRuangan('${r.ID}')"><i class="bi bi-qr-code"></i></button>
         <button class="btn btn-sm btn-outline-info" title="Jadwal" onclick="showJadwalRuangan('${r.ID}')"><i class="bi bi-calendar3"></i></button>
+        ${isAdmin() ? `
         <button class="btn btn-sm btn-outline-primary" title="Edit" onclick="openRuanganModal('${r.ID}')"><i class="bi bi-pencil"></i></button>
         <button class="btn btn-sm btn-outline-danger" title="Hapus" onclick="confirmDeleteRuangan('${r.ID}')"><i class="bi bi-trash"></i></button>
+        ` : ''}
       </td>
     </tr>
   `).join('');

@@ -57,7 +57,7 @@ function renderPengembalianTable(data) {
       <td>${p.CatatanKerusakan || '-'}</td>
       <td><span class="badge ${statusBadgeClass(p.StatusVerifikasi)}">${p.StatusVerifikasi}</span></td>
       <td class="text-nowrap">
-        ${p.StatusVerifikasi === 'Menunggu Verifikasi' ? `<button class="btn btn-sm btn-rri-primary" onclick="openVerifikasiModal('${p.ID}')"><i class="bi bi-check2-square"></i> Verifikasi</button>` : '-'}
+        ${isAdmin() && p.StatusVerifikasi === 'Menunggu Verifikasi' ? `<button class="btn btn-sm btn-rri-primary" onclick="openVerifikasiModal('${p.ID}')"><i class="bi bi-check2-square"></i> Verifikasi</button>` : '-'}
       </td>
     </tr>
   `).join('');
@@ -65,7 +65,8 @@ function renderPengembalianTable(data) {
 
 /* ===== Scan QR via kamera ===== */
 async function openScanModal() {
-  document.getElementById('scanResultBox').classList.add('d-none');
+  document.getElementById('cameraError').classList.add('d-none');
+  document.getElementById('scanNotSupported').classList.add('d-none');
   document.getElementById('manualQrInput').value = '';
   new bootstrap.Modal(document.getElementById('scanModal')).show();
 

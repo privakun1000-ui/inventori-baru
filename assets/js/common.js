@@ -11,6 +11,7 @@ let UNIT_KERJA_LIST_JS = ['Program 1', 'Program 2', 'Programa 4', 'Teknik', 'Tat
 let KATEGORI_BARANG_LIST_JS = ['Elektronik', 'Furniture', 'Peralatan Studio', 'Peralatan Kantor', 'Kendaraan', 'Alat Komunikasi', 'Lainnya'];
 let KONDISI_BARANG_LIST_JS = ['Baik', 'Rusak Ringan', 'Rusak Berat'];
 let STATUS_BARANG_LIST_JS = ['Tersedia', 'Dipinjam', 'Maintenance', 'Rusak'];
+let ROLE_LIST_JS = ['Admin', 'User'];
 
 /**
  * Ambil konstanta terbaru dari backend (dipanggil sekali saat layout dirender)
@@ -23,6 +24,7 @@ async function loadConstants() {
       KATEGORI_BARANG_LIST_JS = res.data.kategoriBarang || KATEGORI_BARANG_LIST_JS;
       KONDISI_BARANG_LIST_JS = res.data.kondisiBarang || KONDISI_BARANG_LIST_JS;
       STATUS_BARANG_LIST_JS = res.data.statusBarang || STATUS_BARANG_LIST_JS;
+      ROLE_LIST_JS = res.data.roleList || ROLE_LIST_JS;
     }
   } catch (e) {
     console.warn('Gagal memuat konstanta dari backend, menggunakan default.', e);
@@ -37,26 +39,48 @@ const MENU_ITEMS = [
   { section: 'Master Data', items: [
     { href: 'barang.html', icon: 'bi-box-seam', label: 'Data Barang' },
     { href: 'ruangan.html', icon: 'bi-door-open', label: 'Data Ruangan' },
-    { href: 'pengguna.html', icon: 'bi-people', label: 'Pengguna' }
+    { href: 'pengguna.html', icon: 'bi-people', label: 'Pengguna', adminOnly: true }
   ]},
   { section: 'Transaksi', items: [
     { href: 'peminjaman.html', icon: 'bi-box-arrow-right', label: 'Peminjaman Barang' },
     { href: 'pemakaian-ruangan.html', icon: 'bi-calendar-check', label: 'Pemakaian Ruangan' },
     { href: 'pengembalian.html', icon: 'bi-box-arrow-in-left', label: 'Pengembalian' },
-    { href: 'mutasi.html', icon: 'bi-arrow-left-right', label: 'Mutasi Barang' }
+    { href: 'mutasi.html', icon: 'bi-arrow-left-right', label: 'Mutasi Barang', adminOnly: true }
   ]},
   { section: 'Laporan', items: [
-    { href: 'audit-trail.html', icon: 'bi-journal-text', label: 'Audit Trail' }
+    { href: 'audit-trail.html', icon: 'bi-journal-text', label: 'Audit Trail', adminOnly: true }
   ]},
   { section: 'Akun', items: [
     { href: 'ganti-password.html', icon: 'bi-key', label: 'Ganti Password' }
   ]}
 ];
 
+/**
+ * Cek apakah user saat ini adalah Admin
+ */
+function isAdmin() {
+  const user = getCurrentUser();
+  return user && user.role === 'Admin';
+}
+
 async function renderLayout(activePage) {
   requireLogin();
   const user = getCurrentUser();
   await loadConstants();
+
+  // Guard: jika halaman ini admin-only tapi user bukan Admin, alihkan ke dashboard
+  const currentMenuItem = MENU_ITEMS.flatMap(g => g.items).find(i => i.href === activePage);
+  if (currentMenuItem && currentMenuItem.adminOnly && !isAdmin()) {
+    window.location.href = 'dashboard.html';
+    return;
+  }
+
+  const visibleMenuGroups = MENU_ITEMS
+    .map(group => ({
+      section: group.section,
+      items: group.items.filter(item => !item.adminOnly || isAdmin())
+    }))
+    .filter(group => group.items.length > 0);
 
   const sidebarHtml = `
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
@@ -66,7 +90,7 @@ async function renderLayout(activePage) {
         <div class="subtitle">Sistem Inventori Aset</div>
       </div>
       <nav class="nav flex-column flex-grow-1 py-2" style="overflow-y:auto;">
-        ${MENU_ITEMS.map(group => `
+        ${visibleMenuGroups.map(group => `
           <div class="nav-section-title">${group.section}</div>
           ${group.items.map(item => `
             <a href="${item.href}" class="nav-link ${activePage === item.href ? 'active' : ''}">

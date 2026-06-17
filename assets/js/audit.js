@@ -9,6 +9,10 @@ let auditCache = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   await renderLayout('audit-trail.html');
+  if (!isAdmin()) {
+    document.getElementById('btnExportExcel').classList.add('d-none');
+    document.getElementById('btnExportPdf').classList.add('d-none');
+  }
   await loadAudit();
 
   document.getElementById('btnFilter').addEventListener('click', loadAudit);

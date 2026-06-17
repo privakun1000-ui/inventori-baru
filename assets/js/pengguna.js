@@ -10,6 +10,7 @@ let penggunaCache = [];
 document.addEventListener('DOMContentLoaded', async () => {
   await renderLayout('pengguna.html');
   populateUnitKerjaOptions();
+  populateRoleOptions();
   await loadPengguna();
 
   document.getElementById('searchInput').addEventListener('input', debounce(loadPengguna, 400));
@@ -35,6 +36,15 @@ function populateUnitKerjaOptions() {
   });
 }
 
+function populateRoleOptions() {
+  const sel = document.getElementById('rolePengguna');
+  ROLE_LIST_JS.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r; opt.textContent = r;
+    sel.appendChild(opt);
+  });
+}
+
 async function loadPengguna() {
   const params = { search: document.getElementById('searchInput').value };
 
@@ -55,7 +65,7 @@ function renderPenggunaTable(data) {
   const tbody = document.getElementById('penggunaTableBody');
 
   if (data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="bi bi-inbox"></i>Tidak ada data pengguna</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="bi bi-inbox"></i>Tidak ada data pengguna</div></td></tr>`;
     return;
   }
 
@@ -66,6 +76,7 @@ function renderPenggunaTable(data) {
       <td>${u.Email || '-'}</td>
       <td>${u.NomorWhatsApp || '-'}</td>
       <td>${u.UnitKerja}</td>
+      <td><span class="badge ${u.Role === 'Admin' ? 'bg-soft-navy' : 'bg-secondary'}">${u.Role}</span></td>
       <td><span class="badge ${statusBadgeClass(u.Status)}">${u.Status}</span></td>
       <td class="text-nowrap">
         <button class="btn btn-sm btn-outline-warning" title="Reset Password" onclick="openResetPassword('${u.ID}')"><i class="bi bi-key"></i></button>
@@ -92,10 +103,12 @@ function openPenggunaModal(id) {
     document.getElementById('emailPengguna').value = u.Email;
     document.getElementById('whatsappPengguna').value = u.NomorWhatsApp;
     document.getElementById('unitKerjaPengguna').value = u.UnitKerja;
+    document.getElementById('rolePengguna').value = u.Role || 'Admin';
     document.getElementById('statusPengguna').value = u.Status;
     pwField.classList.add('d-none');
   } else {
     document.getElementById('penggunaModalTitle').textContent = 'Tambah Pengguna';
+    document.getElementById('rolePengguna').value = 'Admin';
     pwField.classList.remove('d-none');
   }
 
@@ -113,7 +126,7 @@ async function submitPengguna(e) {
     nomorWhatsApp: document.getElementById('whatsappPengguna').value,
     unitKerja: document.getElementById('unitKerjaPengguna').value,
     status: document.getElementById('statusPengguna').value,
-    role: 'Admin'
+    role: document.getElementById('rolePengguna').value
   };
 
   showLoading();

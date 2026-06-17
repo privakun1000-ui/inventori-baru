@@ -11,6 +11,9 @@ let mutasiCache = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   await renderLayout('mutasi.html');
+  if (!isAdmin()) {
+    document.getElementById('btnTambahMutasi').classList.add('d-none');
+  }
   await loadBarangOptions();
   await loadRuanganOptions();
   await loadMutasi();

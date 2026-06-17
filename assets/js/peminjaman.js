@@ -90,8 +90,8 @@ function renderPeminjamanTable(data) {
       <td><span class="badge ${statusBadgeClass(p.Status)}">${p.Status}</span></td>
       <td>${p.QRCodeURL ? `<img src="${p.QRCodeURL}" class="thumb-img" style="cursor:pointer" onclick="showQRPeminjaman('${p.ID}')">` : '-'}</td>
       <td class="text-nowrap">
-        ${p.Status === 'Pending' ? `<button class="btn btn-sm btn-rri-primary" onclick="openApprovalModal('${p.ID}')"><i class="bi bi-check2-square"></i> Proses</button>` : ''}
-        ${p.Status === 'Dipinjam' || p.Status === 'Dikembalikan' ? `<button class="btn btn-sm btn-outline-secondary" onclick="generateBASTFor('${p.ID}')"><i class="bi bi-file-earmark-text"></i> BAST</button>` : ''}
+        ${isAdmin() && p.Status === 'Pending' ? `<button class="btn btn-sm btn-rri-primary" onclick="openApprovalModal('${p.ID}')"><i class="bi bi-check2-square"></i> Proses</button>` : ''}
+        ${isAdmin() && (p.Status === 'Dipinjam' || p.Status === 'Dikembalikan') ? `<button class="btn btn-sm btn-outline-secondary" onclick="generateBASTFor('${p.ID}')"><i class="bi bi-file-earmark-text"></i> BAST</button>` : ''}
         <button class="btn btn-sm btn-outline-info" onclick="showDetailPeminjaman('${p.ID}')"><i class="bi bi-eye"></i></button>
       </td>
     </tr>
@@ -101,6 +101,13 @@ function renderPeminjamanTable(data) {
 function openPeminjamanModal() {
   document.getElementById('formPeminjaman').reset();
   document.getElementById('previewFotoPinjam').classList.add('d-none');
+
+  const user = getCurrentUser();
+  if (user) {
+    document.getElementById('peminjamNama').value = user.nama;
+    document.getElementById('unitKerjaPinjam').value = user.unitKerja;
+  }
+
   new bootstrap.Modal(document.getElementById('peminjamanModal')).show();
 }
 

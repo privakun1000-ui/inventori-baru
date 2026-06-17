@@ -7,12 +7,14 @@
 
 let barangCache = [];
 let ruanganCache = [];
+let activePeminjamanCache = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   await renderLayout('barang.html');
   populateSelectOptions();
   await loadRuanganOptions();
   await loadBarang();
+  applyRoleRestrictions();
 
   document.getElementById('searchInput').addEventListener('input', debounce(loadBarang, 400));
   document.getElementById('filterKategori').addEventListener('change', loadBarang);
@@ -25,7 +27,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btnExportPdf').addEventListener('click', () => doExport('pdf'));
 
   document.getElementById('btnTambahBarang').addEventListener('click', () => openBarangModal(null));
+
+  document.getElementById('formPinjamCepat').addEventListener('submit', submitPinjamCepat);
+  document.getElementById('formKembalikanCepat').addEventListener('submit', submitKembalikanCepat);
 });
+
+function applyRoleRestrictions() {
+  if (!isAdmin()) {
+    document.getElementById('btnTambahBarang').classList.add('d-none');
+    document.getElementById('btnExportExcel').classList.add('d-none');
+    document.getElementById('btnExportPdf').classList.add('d-none');
+  }
+}
 
 function debounce(fn, delay) {
   let timer;
@@ -98,16 +111,24 @@ async function loadBarang() {
   };
 
   showLoading();
-  const res = await callApi('getBarangList', params);
+  const [resBarang, resPeminjaman] = await Promise.all([
+    callApi('getBarangList', params),
+    callApi('getPeminjamanList', { status: 'Dipinjam' })
+  ]);
   hideLoading();
 
-  if (!res.success) {
-    showToast(res.message, 'error');
+  if (!resBarang.success) {
+    showToast(resBarang.message, 'error');
     return;
   }
 
-  barangCache = res.data;
+  barangCache = resBarang.data;
+  activePeminjamanCache = resPeminjaman.success ? resPeminjaman.data : [];
   renderBarangTable(barangCache);
+}
+
+function findActivePeminjamanForBarang(barangId) {
+  return activePeminjamanCache.find(p => String(p.BarangID) === String(barangId));
 }
 
 function renderBarangTable(data) {
@@ -118,7 +139,19 @@ function renderBarangTable(data) {
     return;
   }
 
-  tbody.innerHTML = data.map(b => `
+  tbody.innerHTML = data.map(b => {
+    const activePeminjaman = findActivePeminjamanForBarang(b.ID);
+    const currentUser = getCurrentUser();
+    const isPeminjamSendiri = activePeminjaman && currentUser && activePeminjaman.Peminjam === currentUser.nama;
+
+    let actionBtn = '';
+    if (b.Status === 'Tersedia') {
+      actionBtn = `<button class="btn btn-sm btn-rri-primary" title="Pinjam Barang Ini" onclick="openPinjamCepatModal('${b.ID}')"><i class="bi bi-box-arrow-right"></i> Pinjam</button>`;
+    } else if (b.Status === 'Dipinjam' && isPeminjamSendiri) {
+      actionBtn = `<button class="btn btn-sm btn-success" title="Kembalikan Barang Ini" onclick="openKembalikanCepatModal('${activePeminjaman.ID}')"><i class="bi bi-box-arrow-in-left"></i> Kembalikan</button>`;
+    }
+
+    return `
     <tr>
       <td>${b.FotoURL ? `<img src="${b.FotoURL}" class="thumb-img">` : `<div class="thumb-img d-flex align-items-center justify-content-center"><i class="bi bi-image text-muted"></i></div>`}</td>
       <td><span class="fw-semibold">${b.KodeBarang}</span><br><small class="text-muted">${b.NomorInventaris || '-'}</small></td>
@@ -130,11 +163,15 @@ function renderBarangTable(data) {
       <td><span class="badge ${statusBadgeClass(b.Status)}">${b.Status}</span></td>
       <td class="text-nowrap">
         <button class="btn btn-sm btn-outline-secondary" title="Lihat QR/Barcode" onclick="showQRBarcode('${b.ID}')"><i class="bi bi-qr-code"></i></button>
+        ${actionBtn}
+        ${isAdmin() ? `
         <button class="btn btn-sm btn-outline-primary" title="Edit" onclick="openBarangModal('${b.ID}')"><i class="bi bi-pencil"></i></button>
         <button class="btn btn-sm btn-outline-danger" title="Hapus" onclick="confirmDeleteBarang('${b.ID}')"><i class="bi bi-trash"></i></button>
+        ` : ''}
       </td>
     </tr>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function openBarangModal(id) {
@@ -253,6 +290,99 @@ async function doExport(format) {
 
   if (res.success) {
     window.open(res.data.downloadUrl, '_blank');
+  } else {
+    showToast(res.message, 'error');
+  }
+}
+
+/* ===== Pinjam Cepat (dari halaman Data Barang) ===== */
+function openPinjamCepatModal(barangId) {
+  const b = barangCache.find(x => x.ID === barangId);
+  if (!b) return;
+
+  const user = getCurrentUser();
+  document.getElementById('formPinjamCepat').reset();
+  document.getElementById('pinjamCepatBarangId').value = b.ID;
+  document.getElementById('pinjamCepatInfo').innerHTML = `<strong>${b.NamaBarang}</strong> (${b.KodeBarang}) &middot; ${b.Ruangan}`;
+  if (user) {
+    document.getElementById('pinjamCepatPeminjam').value = user.nama;
+    document.getElementById('pinjamCepatUnitKerja').value = user.unitKerja;
+  }
+  document.getElementById('previewFotoPinjamCepat').classList.add('d-none');
+
+  new bootstrap.Modal(document.getElementById('pinjamCepatModal')).show();
+}
+
+async function submitPinjamCepat(e) {
+  e.preventDefault();
+
+  const fotoFile = document.getElementById('fotoPinjamCepat').files[0];
+  let fotoBase64 = null;
+  if (fotoFile) fotoBase64 = await fileToBase64(fotoFile);
+
+  const payload = {
+    peminjam: document.getElementById('pinjamCepatPeminjam').value,
+    unitKerja: document.getElementById('pinjamCepatUnitKerja').value,
+    barangId: document.getElementById('pinjamCepatBarangId').value,
+    tanggalPinjam: document.getElementById('pinjamCepatTanggal').value,
+    jamMulai: document.getElementById('pinjamCepatJamMulai').value,
+    jamSelesai: document.getElementById('pinjamCepatJamSelesai').value,
+    keperluan: document.getElementById('pinjamCepatKeperluan').value,
+    fotoBase64: fotoBase64
+  };
+
+  showLoading();
+  const res = await callApi('createPeminjaman', payload);
+  hideLoading();
+
+  if (res.success) {
+    showToast(res.message, 'success');
+    bootstrap.Modal.getInstance(document.getElementById('pinjamCepatModal')).hide();
+    await loadBarang();
+  } else {
+    showToast(res.message, 'error');
+  }
+}
+
+/* ===== Kembalikan Cepat (dari halaman Data Barang) ===== */
+function openKembalikanCepatModal(peminjamanId) {
+  const p = activePeminjamanCache.find(x => x.ID === peminjamanId);
+  if (!p) return;
+
+  document.getElementById('formKembalikanCepat').reset();
+  document.getElementById('kembalikanCepatPeminjamanId').value = p.ID;
+  document.getElementById('kembalikanCepatInfo').innerHTML = `
+    <strong>${p.NamaBarang}</strong><br>
+    No. Transaksi: ${p.NomorTransaksi}<br>
+    Dipinjam sejak: ${formatDateID(p.TanggalPinjam)} (${p.JamMulai}-${p.JamSelesai})
+  `;
+  document.getElementById('previewFotoKembalikanCepat').classList.add('d-none');
+
+  new bootstrap.Modal(document.getElementById('kembalikanCepatModal')).show();
+}
+
+async function submitKembalikanCepat(e) {
+  e.preventDefault();
+
+  const fotoFile = document.getElementById('fotoKembalikanCepat').files[0];
+  let fotoBase64 = null;
+  if (fotoFile) fotoBase64 = await fileToBase64(fotoFile);
+
+  const payload = {
+    peminjamanId: document.getElementById('kembalikanCepatPeminjamanId').value,
+    fotoBase64: fotoBase64,
+    kondisiBarang: document.getElementById('kembalikanCepatKondisi').value,
+    catatanKerusakan: document.getElementById('kembalikanCepatCatatan').value
+  };
+
+  showLoading();
+  const res = await callApi('createPengembalian', payload);
+  hideLoading();
+
+  if (res.success) {
+    showToast(res.message, 'success');
+    bootstrap.Modal.getInstance(document.getElementById('kembalikanCepatModal')).hide();
+    await loadBarang();
   } else {
     showToast(res.message, 'error');
   }

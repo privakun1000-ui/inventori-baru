@@ -38,6 +38,7 @@
                 <th>Email</th>
                 <th>No. WhatsApp</th>
                 <th>Unit Kerja</th>
+                <th>Role</th>
                 <th>Status</th>
                 <th>Aksi</th>
               </tr>
@@ -88,6 +89,11 @@
                 <select class="form-select" id="unitKerjaPengguna" required>
                   <option value="">-- Pilih Unit Kerja --</option>
                 </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Role <span class="text-danger">*</span></label>
+                <select class="form-select" id="rolePengguna" required></select>
+                <div class="form-text">Admin: akses penuh. User: hanya lihat data &amp; ajukan peminjaman/pemakaian ruangan.</div>
               </div>
               <div class="col-md-6">
                 <label class="form-label">Status</label>

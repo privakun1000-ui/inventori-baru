@@ -79,7 +79,7 @@ function renderPemakaianTable(data) {
       <td>${p.UnitKerja}<br><small class="text-muted">PIC: ${p.PIC}</small></td>
       <td><span class="badge ${statusBadgeClass(p.Status)}">${p.Status}</span></td>
       <td class="text-nowrap">
-        ${p.Status === 'Pending' ? `<button class="btn btn-sm btn-rri-primary" onclick="openApprovalModal('${p.ID}')"><i class="bi bi-check2-square"></i> Proses</button>` : '-'}
+        ${isAdmin() && p.Status === 'Pending' ? `<button class="btn btn-sm btn-rri-primary" onclick="openApprovalModal('${p.ID}')"><i class="bi bi-check2-square"></i> Proses</button>` : '-'}
       </td>
     </tr>
   `).join('');
@@ -88,6 +88,13 @@ function renderPemakaianTable(data) {
 function openPemakaianModal() {
   document.getElementById('formPemakaian').reset();
   document.getElementById('bentrokWarning').classList.add('d-none');
+
+  const user = getCurrentUser();
+  if (user) {
+    document.getElementById('picPemakaian').value = user.nama;
+    document.getElementById('unitKerjaPemakaian').value = user.unitKerja;
+  }
+
   new bootstrap.Modal(document.getElementById('pemakaianModal')).show();
 }
 
