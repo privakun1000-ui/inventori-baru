@@ -8,7 +8,7 @@
  * setelah deploy (Deploy > New deployment > Web app).
  */
 
-const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxmziFc_IZY8nzN1aw-oP27VclUkt52kBN7nmor1ZCkzHLJaJqD28YYZgI9DJSyugNm/exec';
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwmtlqaMembso-IWP7d8bHZvCwRsZL73gyWOOTUeXuSU5gnVxv338136o4ry3ftXs0c/exec';
 
 /**
  * Panggil backend Apps Script.
