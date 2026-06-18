@@ -8,7 +8,7 @@
  * setelah deploy (Deploy > New deployment > Web app).
  */
 
-const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwmtlqaMembso-IWP7d8bHZvCwRsZL73gyWOOTUeXuSU5gnVxv338136o4ry3ftXs0c/exec';
+const API_BASE_URL = 'https://script.google.com/macros/s/PASTE_DEPLOYMENT_ID_DISINI/exec';
 
 /**
  * Panggil backend Apps Script.
@@ -21,7 +21,11 @@ const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwmtlqaMembso-IWP7
  */
 async function callApi(action, payload = {}) {
   const token = getToken();
-  const body = Object.assign({ action: action, token: token || '' }, payload);
+  // Payload tidak boleh menimpa nama endpoint 'action' utama;
+  // gunakan 'decision' atau nama lain untuk parameter bisnis serupa.
+  const safePayload = Object.assign({}, payload);
+  delete safePayload.action;
+  const body = Object.assign({ token: token || '' }, safePayload, { action: action });
 
   try {
     const response = await fetch(API_BASE_URL, {

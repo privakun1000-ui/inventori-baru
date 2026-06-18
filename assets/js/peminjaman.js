@@ -7,6 +7,8 @@
 
 let peminjamanCache = [];
 let barangTersediaCache = [];
+let scanBarangStream = null;
+let scanBarangInterval = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   await renderLayout('peminjaman.html');
@@ -19,6 +21,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('formPeminjaman').addEventListener('submit', submitPeminjaman);
   document.getElementById('btnAjukanPinjam').addEventListener('click', openPeminjamanModal);
   document.getElementById('formApproval').addEventListener('submit', submitApproval);
+  document.getElementById('btnScanBarangPinjam').addEventListener('click', openScanBarangModal);
+  document.getElementById('btnManualScanBarang').addEventListener('click', () => {
+    const val = document.getElementById('manualScanBarangInput').value.trim();
+    if (val) processScanBarangContent(val);
+  });
+  document.getElementById('scanBarangModal').addEventListener('hidden.bs.modal', stopScanBarangCamera);
 });
 
 function debounce(fn, delay) {
@@ -101,6 +109,7 @@ function renderPeminjamanTable(data) {
 function openPeminjamanModal() {
   document.getElementById('formPeminjaman').reset();
   document.getElementById('previewFotoPinjam').classList.add('d-none');
+  document.getElementById('barangPinjamScanInfo').innerHTML = '';
 
   const user = getCurrentUser();
   if (user) {
@@ -162,11 +171,11 @@ function openApprovalModal(id) {
 async function submitApproval(e) {
   e.preventDefault();
   const id = document.getElementById('approvalPeminjamanId').value;
-  const action = e.submitter.dataset.action;
+  const decision = e.submitter.dataset.action;
   const catatan = document.getElementById('catatanApproval').value;
 
   showLoading();
-  const res = await callApi('approvePeminjaman', { id, action, catatan });
+  const res = await callApi('approvePeminjaman', { id, decision, catatan });
   hideLoading();
 
   if (res.success) {
@@ -223,4 +232,80 @@ async function generateBASTFor(id) {
   } else {
     showToast(res.message, 'error');
   }
+}
+
+/* ===== Scan Barcode/QR untuk auto-isi field Barang ===== */
+async function openScanBarangModal() {
+  document.getElementById('scanBarangCameraError').classList.add('d-none');
+  document.getElementById('scanBarangNotSupported').classList.add('d-none');
+  document.getElementById('manualScanBarangInput').value = '';
+  new bootstrap.Modal(document.getElementById('scanBarangModal')).show();
+
+  try {
+    scanBarangStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    const video = document.getElementById('scanBarangPreview');
+    video.srcObject = scanBarangStream;
+    video.play();
+
+    if ('BarcodeDetector' in window) {
+      const detector = new BarcodeDetector({ formats: ['qr_code', 'code_128'] });
+      scanBarangInterval = setInterval(async () => {
+        try {
+          const codes = await detector.detect(video);
+          if (codes.length > 0) {
+            await processScanBarangContent(codes[0].rawValue);
+          }
+        } catch (e) { /* ignore */ }
+      }, 800);
+    } else {
+      document.getElementById('scanBarangNotSupported').classList.remove('d-none');
+    }
+  } catch (e) {
+    document.getElementById('scanBarangCameraError').classList.remove('d-none');
+  }
+}
+
+function stopScanBarangCamera() {
+  if (scanBarangInterval) clearInterval(scanBarangInterval);
+  scanBarangInterval = null;
+  if (scanBarangStream) {
+    scanBarangStream.getTracks().forEach(t => t.stop());
+    scanBarangStream = null;
+  }
+}
+
+async function processScanBarangContent(rawValue) {
+  // Coba parse sebagai JSON (hasil QR Code internal aplikasi: { type:'barang', id, kode })
+  let barangId = null;
+  let kodeBarang = null;
+  try {
+    const parsed = JSON.parse(rawValue);
+    if (parsed.type === 'barang') {
+      barangId = parsed.id;
+      kodeBarang = parsed.kode;
+    }
+  } catch (e) {
+    // Bukan JSON: kemungkinan hasil scan Barcode (Code128) berisi Kode Barang langsung
+    kodeBarang = rawValue.trim();
+  }
+
+  let barang = null;
+  if (barangId) {
+    barang = barangTersediaCache.find(b => b.ID === barangId);
+  }
+  if (!barang && kodeBarang) {
+    barang = barangTersediaCache.find(b => b.KodeBarang === kodeBarang);
+  }
+
+  if (!barang) {
+    showToast('Barang tidak ditemukan atau sedang tidak tersedia untuk dipinjam', 'error');
+    return;
+  }
+
+  stopScanBarangCamera();
+  bootstrap.Modal.getInstance(document.getElementById('scanBarangModal'))?.hide();
+
+  document.getElementById('barangPinjam').value = barang.ID;
+  document.getElementById('barangPinjamScanInfo').innerHTML = `<i class="bi bi-check-circle text-success"></i> Terdeteksi: ${barang.NamaBarang} (${barang.KodeBarang})`;
+  showToast('Barang berhasil terdeteksi: ' + barang.NamaBarang, 'success');
 }

@@ -160,9 +160,10 @@ function renderBarangTable(data) {
       <td>${b.UnitKerja}</td>
       <td>${b.Ruangan}</td>
       <td><span class="badge ${statusBadgeClass(b.Kondisi)}">${b.Kondisi}</span></td>
-      <td><span class="badge ${statusBadgeClass(b.Status)}">${b.Status}</span></td>
+      <td><span class="badge ${statusBadgeClass(b.Status)}">${b.Status}</span>${b.ButuhApproval === 'Tidak' ? ' <span class="badge bg-soft-teal" title="Bisa langsung dipinjam tanpa approval">Tanpa Approval</span>' : ''}</td>
       <td class="text-nowrap">
         <button class="btn btn-sm btn-outline-secondary" title="Lihat QR/Barcode" onclick="showQRBarcode('${b.ID}')"><i class="bi bi-qr-code"></i></button>
+        <button class="btn btn-sm btn-outline-info" title="Cek Ketersediaan" onclick="showKetersediaanBarang('${b.ID}')"><i class="bi bi-calendar3"></i></button>
         ${actionBtn}
         ${isAdmin() ? `
         <button class="btn btn-sm btn-outline-primary" title="Edit" onclick="openBarangModal('${b.ID}')"><i class="bi bi-pencil"></i></button>
@@ -195,6 +196,7 @@ function openBarangModal(id) {
     document.getElementById('kondisi').value = b.Kondisi;
     document.getElementById('status').value = b.Status;
     document.getElementById('keterangan').value = b.Keterangan;
+    document.getElementById('butuhApproval').value = b.ButuhApproval === 'Tidak' ? 'Tidak' : 'Ya';
 
     if (b.FotoURL) {
       const img = document.getElementById('previewFoto');
@@ -203,6 +205,7 @@ function openBarangModal(id) {
     }
   } else {
     document.getElementById('barangModalTitle').textContent = 'Tambah Barang';
+    document.getElementById('butuhApproval').value = 'Ya';
   }
 
   new bootstrap.Modal(document.getElementById('barangModal')).show();
@@ -227,6 +230,7 @@ async function submitBarang(e) {
     kondisi: document.getElementById('kondisi').value,
     status: document.getElementById('status').value,
     keterangan: document.getElementById('keterangan').value,
+    butuhApproval: document.getElementById('butuhApproval').value,
     fotoBase64: fotoBase64
   };
 
@@ -303,7 +307,8 @@ function openPinjamCepatModal(barangId) {
   const user = getCurrentUser();
   document.getElementById('formPinjamCepat').reset();
   document.getElementById('pinjamCepatBarangId').value = b.ID;
-  document.getElementById('pinjamCepatInfo').innerHTML = `<strong>${b.NamaBarang}</strong> (${b.KodeBarang}) &middot; ${b.Ruangan}`;
+  document.getElementById('pinjamCepatInfo').innerHTML = `<strong>${b.NamaBarang}</strong> (${b.KodeBarang}) &middot; ${b.Ruangan}` +
+    (b.ButuhApproval === 'Tidak' ? '<br><span class="badge bg-soft-teal mt-1">Barang ini bisa langsung dipinjam tanpa approval admin</span>' : '<br><span class="text-muted small">Pengajuan ini akan menunggu approval admin terlebih dahulu.</span>');
   if (user) {
     document.getElementById('pinjamCepatPeminjam').value = user.nama;
     document.getElementById('pinjamCepatUnitKerja').value = user.unitKerja;
@@ -386,4 +391,43 @@ async function submitKembalikanCepat(e) {
   } else {
     showToast(res.message, 'error');
   }
+}
+
+/* ===== Cek Ketersediaan Barang ===== */
+async function showKetersediaanBarang(barangId) {
+  showLoading();
+  const res = await callApi('getKetersediaanBarang', { barangId });
+  hideLoading();
+
+  if (!res.success) {
+    showToast(res.message, 'error');
+    return;
+  }
+
+  const d = res.data;
+  document.getElementById('ketersediaanModalTitle').textContent = `Ketersediaan - ${d.namaBarang}`;
+
+  const container = document.getElementById('ketersediaanModalBody');
+  if (d.tanggalTerpakai.length === 0) {
+    container.innerHTML = `
+      <div class="alert alert-success mb-0">
+        <i class="bi bi-check-circle"></i> Barang ini belum memiliki jadwal peminjaman ke depan. Tersedia untuk dipinjam tanggal berapa pun mulai hari ini.
+      </div>`;
+  } else {
+    container.innerHTML = `
+      <p class="text-muted small mb-2">Berikut tanggal-tanggal yang sudah terisi jadwal peminjaman (pending/disetujui/dipinjam). Tanggal lain di luar daftar ini dapat dianggap tersedia.</p>
+      <div class="list-group list-group-flush">
+        ${d.tanggalTerpakai.map(t => `
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold">${formatDateID(t.tanggal)} &middot; ${t.jamMulai}-${t.jamSelesai}</div>
+              <small class="text-muted">${t.peminjam} (${t.unitKerja}) &middot; ${t.nomorTransaksi}</small>
+            </div>
+            <span class="badge ${statusBadgeClass(t.status)}">${t.status}</span>
+          </div>
+        `).join('')}
+      </div>`;
+  }
+
+  new bootstrap.Modal(document.getElementById('ketersediaanModal')).show();
 }

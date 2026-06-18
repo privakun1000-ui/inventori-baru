@@ -191,11 +191,11 @@ function openApprovalModal(id) {
 async function submitApproval(e) {
   e.preventDefault();
   const id = document.getElementById('approvalPemakaianId').value;
-  const action = e.submitter.dataset.action;
+  const decision = e.submitter.dataset.action;
   const catatan = document.getElementById('catatanApproval').value;
 
   showLoading();
-  const res = await callApi('approvePemakaianRuangan', { id, action, catatan });
+  const res = await callApi('approvePemakaianRuangan', { id, decision, catatan });
   hideLoading();
 
   if (res.success) {

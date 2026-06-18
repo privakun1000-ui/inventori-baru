@@ -87,9 +87,15 @@
               </div>
               <div class="col-12">
                 <label class="form-label">Barang <span class="text-danger">*</span></label>
-                <select class="form-select" id="barangPinjam" required>
-                  <option value="">-- Pilih Barang --</option>
-                </select>
+                <div class="input-group">
+                  <select class="form-select" id="barangPinjam" required>
+                    <option value="">-- Pilih Barang --</option>
+                  </select>
+                  <button type="button" class="btn btn-outline-secondary" id="btnScanBarangPinjam" title="Scan Barcode/QR Barang">
+                    <i class="bi bi-upc-scan"></i> Scan
+                  </button>
+                </div>
+                <div class="form-text" id="barangPinjamScanInfo"></div>
               </div>
               <div class="col-md-4">
                 <label class="form-label">Tanggal Pinjam <span class="text-danger">*</span></label>
@@ -173,6 +179,27 @@
           <img id="qrModalImage" class="qr-preview mb-3" style="width:150px;height:150px;">
           <p class="small text-muted mb-1">Barcode</p>
           <img id="barcodeModalImage" class="qr-preview" style="width:100%;height:60px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Scan Barang -->
+  <div class="modal fade" id="scanBarangModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title">Scan Barcode/QR Barang</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <div id="scanBarangCameraError" class="alert alert-warning d-none">Kamera tidak dapat diakses. Gunakan input manual di bawah.</div>
+          <div id="scanBarangNotSupported" class="alert alert-info d-none">Browser ini tidak mendukung pemindaian otomatis. Gunakan input manual (salin Kode Barang atau isi QR) di bawah.</div>
+          <video id="scanBarangPreview" autoplay muted playsinline class="mb-3"></video>
+          <div class="input-group">
+            <input type="text" class="form-control" id="manualScanBarangInput" placeholder="Atau ketik Kode Barang / tempel isi QR di sini">
+            <button class="btn btn-rri-primary" id="btnManualScanBarang" type="button">Proses</button>
+          </div>
         </div>
       </div>
     </div>

@@ -139,6 +139,14 @@
                 <label class="form-label">Status</label>
                 <select class="form-select select-status-barang" id="status"></select>
               </div>
+              <div class="col-md-6">
+                <label class="form-label">Butuh Approval Saat Dipinjam?</label>
+                <select class="form-select" id="butuhApproval">
+                  <option value="Ya">Ya, perlu approval admin</option>
+                  <option value="Tidak">Tidak, bisa langsung dipinjam</option>
+                </select>
+                <div class="form-text">Jika "Tidak", pengajuan peminjaman barang ini langsung berstatus Dipinjam tanpa menunggu approval.</div>
+              </div>
               <div class="col-12">
                 <label class="form-label">Keterangan</label>
                 <textarea class="form-control" id="keterangan" rows="2"></textarea>
@@ -267,6 +275,19 @@
             <button type="submit" class="btn btn-rri-primary">Simpan Pengembalian</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ketersediaan Barang -->
+  <div class="modal fade" id="ketersediaanModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title" id="ketersediaanModalTitle">Ketersediaan Barang</h6>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="ketersediaanModalBody"></div>
       </div>
     </div>
   </div>
