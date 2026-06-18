@@ -8,7 +8,7 @@
  * setelah deploy (Deploy > New deployment > Web app).
  */
 
-const API_BASE_URL = 'https://script.google.com/macros/s/PASTE_DEPLOYMENT_ID_DISINI/exec';
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxP4pHxmjxx0O0zZD4qPMqavkO33zP280KUx8GFeNYv20DGQH9x44etnbI3DLUZ2_k9/exec';
 
 /**
  * Panggil backend Apps Script.
